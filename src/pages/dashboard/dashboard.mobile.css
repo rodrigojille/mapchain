@@ -1,0 +1,29 @@
+@media (max-width: 700px) {
+  .dashboard-container {
+    padding: 2vw !important;
+  }
+  .dashboard-paper, .dashboard-card {
+    padding: 14px 8px !important;
+    border-radius: 12px !important;
+    margin-bottom: 18px !important;
+  }
+  .dashboard-title {
+    font-size: 1.3rem !important;
+    text-align: center !important;
+  }
+  .dashboard-group {
+    flex-direction: column !important;
+    gap: 10px !important;
+    align-items: stretch !important;
+  }
+  .dashboard-table th, .dashboard-table td {
+    font-size: 0.97rem !important;
+    padding: 8px 4px !important;
+  }
+  .dashboard-shortcuts {
+    flex-direction: column !important;
+    gap: 10px !important;
+    align-items: stretch !important;
+    margin-bottom: 10px !important;
+  }
+}

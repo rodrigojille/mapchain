@@ -1,0 +1,198 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+// User model for authentication and role management
+model User {
+  id                String    @id @default(auto()) @map("_id") @db.ObjectId
+  email             String    @unique
+  name              String?
+  password          String?   // Hashed password for traditional auth
+  walletAddress     String?   @unique // For Web3 authentication
+  role              UserRole  @default(PROPERTY_OWNER)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  // Relations
+  properties        Property[]
+  valuationRequests ValuationRequest[] @relation("RequestedBy")
+  valuations        Valuation[]        @relation("PerformedBy")
+  tokenizedAssets   TokenizedAsset[]
+  sessions          Session[]
+}
+
+enum UserRole {
+  PROPERTY_OWNER
+  VALUATOR
+  ADMIN
+}
+
+// Session model for auth management
+model Session {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId       String
+  expires      DateTime
+  sessionToken String   @unique
+  accessToken  String   @unique
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// Property model
+model Property {
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  title         String
+  description   String?
+  ownerId       String
+  addressLine1  String
+  addressLine2  String?
+  city          String
+  state         String
+  zipCode       String
+  country       String    @default("United States")
+  latitude      Float?
+  longitude     Float?
+  bedrooms      Int?
+  bathrooms     Float?
+  squareFootage Int?
+  yearBuilt     Int?
+  propertyType  String
+  images        String[]  // URLs to property images
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  // Relations
+  owner             User               @relation(fields: [ownerId], references: [id])
+  valuationRequests ValuationRequest[]
+  valuations        Valuation[]
+  tokenizedAsset    TokenizedAsset?
+}
+
+// Valuation request model
+model ValuationRequest {
+  id            String           @id @default(auto()) @map("_id") @db.ObjectId
+  propertyId    String
+  requestedById String
+  status        RequestStatus    @default(PENDING)
+  requestType   ValuationType
+  notes         String?
+  fee           Float?           // Fee in USD
+  escrowTxId    String?          // Hedera transaction ID for escrow
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  
+  // Relations
+  property      Property         @relation(fields: [propertyId], references: [id])
+  requestedBy   User             @relation("RequestedBy", fields: [requestedById], references: [id])
+  valuation     Valuation?
+}
+
+enum RequestStatus {
+  PENDING
+  ACCEPTED
+  COMPLETED
+  REJECTED
+  CANCELLED
+}
+
+enum ValuationType {
+  AI
+  PROFESSIONAL
+}
+
+// Valuation model
+model Valuation {
+  id                String          @id @default(auto()) @map("_id") @db.ObjectId
+  propertyId        String
+  valuatorId        String?         // Null for AI valuations
+  requestId         String?         @unique
+  valuationType     ValuationType
+  value             Float
+  rentEstimate      Float?
+  confidence        Float?          // For AI valuations (0-1)
+  factors           Json?           // Factors affecting valuation
+  notes             String?
+  tokenId           String?         // Hedera token ID if tokenized
+  transactionId     String?         // Hedera transaction ID
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  
+  // Relations
+  property          Property        @relation(fields: [propertyId], references: [id])
+  valuator          User?           @relation("PerformedBy", fields: [valuatorId], references: [id])
+  request           ValuationRequest? @relation(fields: [requestId], references: [id])
+}
+
+// Tokenized Asset model
+model TokenizedAsset {
+  id                String          @id @default(auto()) @map("_id") @db.ObjectId
+  propertyId        String          @unique
+  ownerId           String
+  tokenId           String          // Hedera token ID
+  tokenSymbol       String
+  tokenName         String
+  serialNumber      String?         // For NFTs
+  transactionId     String          // Creation transaction ID
+  metadata          Json?           // Token metadata
+  status            TokenStatus     @default(ACTIVE)
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  
+  // Relations
+  property          Property        @relation(fields: [propertyId], references: [id])
+  owner             User            @relation(fields: [ownerId], references: [id])
+  transactions      TokenTransaction[]
+}
+
+enum TokenStatus {
+  PENDING
+  ACTIVE
+  FROZEN
+  DELETED
+}
+
+// Token Transaction model
+model TokenTransaction {
+  id                String          @id @default(auto()) @map("_id") @db.ObjectId
+  tokenizedAssetId  String
+  transactionId     String          // Hedera transaction ID
+  transactionType   TransactionType
+  fromAddress       String?
+  toAddress         String?
+  amount            Float?          // For fungible tokens
+  serialNumber      String?         // For NFTs
+  timestamp         DateTime        @default(now())
+  status            String
+  memo              String?
+  
+  // Relations
+  tokenizedAsset    TokenizedAsset  @relation(fields: [tokenizedAssetId], references: [id])
+}
+
+enum TransactionType {
+  MINT
+  TRANSFER
+  BURN
+  FREEZE
+  UNFREEZE
+  UPDATE
+}
+
+model MintedNFT {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  tokenId      String
+  metadataUri  String
+  mintTxId     String
+  serials      String   // store as CSV or JSON
+  createdAt    DateTime @default(now())
+}

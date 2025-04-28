@@ -1,0 +1,336 @@
+import { AppShell, Box, Container, Title, Text, Grid, Paper, Avatar, Badge, Group } from '@mantine/core';
+import { createStyles } from '@mantine/styles';
+import { IconMapPin, IconClipboardCheck, IconCoin } from '@tabler/icons-react';
+import { Navigation } from '../components/Navigation';
+import { PropertyMap } from '../components/PropertyMap';
+import { Property } from '../types/Property';
+import { useState } from 'react';
+import { motion } from 'framer-motion';
+import ClientOnly from '../components/ClientOnly';
+
+const useStyles = createStyles((theme) => ({
+  root: {
+    display: 'flex',
+    flexDirection: 'column',
+    minHeight: '100vh',
+    backgroundColor: 'var(--dark-bg)',
+    transition: 'background-color 0.3s ease',
+  },
+  main: {
+    flex: 1,
+    backgroundColor: 'var(--dark-bg)',
+    position: 'relative',
+    paddingTop: 80,
+    '@media (max-width: 755px)': {
+      paddingTop: 60,
+    },
+  },
+  mapContainer: {
+    position: 'relative',
+    marginBottom: theme.spacing.xl,
+    borderRadius: theme.radius.xl,
+    overflow: 'hidden',
+    boxShadow: theme.shadows.md,
+    transition: 'transform 0.3s ease',
+    '&:hover': {
+      transform: 'translateY(-3px)',
+    },
+    '@media (max-width: 755px)': {
+      height: '40vh',
+    },
+  },
+  section: {
+    padding: `${theme.spacing.xl}px ${theme.spacing.xl}px`,
+    position: 'relative',
+    zIndex: 1,
+    background: 'var(--dark-surface)',
+    borderRadius: theme.radius.xl,
+    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.25)',
+    border: '1px solid var(--dark-border)',
+    transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+    '&:hover': {
+      transform: 'translateY(-3px)',
+      boxShadow: 'var(--glow-shadow)',
+    },
+  },
+  stepIcon: {
+    color: 'var(--text-primary)',
+    size: 40,
+    marginBottom: theme.spacing.md,
+  },
+  footer: {
+    backgroundColor: 'var(--dark-bg)',
+    padding: `${theme.spacing.xl}px ${theme.spacing.xl}px`,
+    marginTop: `${theme.spacing.xl}px`,
+    background: 'var(--dark-surface)',
+    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.25)',
+    borderRadius: theme.radius.xl,
+    border: '1px solid var(--dark-border)',
+  },
+}));
+
+const steps = [
+  {
+    title: 'Select Property',
+    description: 'Choose a property from our interactive map interface',
+    icon: IconMapPin,
+  },
+  {
+    title: 'Request Valuation',
+    description: 'Get an instant AI valuation or schedule a professional assessment',
+    icon: IconClipboardCheck,
+  },
+  {
+    title: 'Receive Report',
+    description: 'Access your detailed property valuation report in minutes',
+    icon: IconCoin,
+  },
+];
+
+const reviews = [
+  {
+    avatar: 'https://i.pravatar.cc/150?img=1',
+    name: 'Sarah Johnson',
+    role: 'Professional Valuator',
+    content: 'MapChain has revolutionized how I conduct property valuations. The AI insights are incredibly accurate and save me hours of research.',
+  },
+  {
+    avatar: 'https://i.pravatar.cc/150?img=2',
+    name: 'Michael Chen',
+    role: 'Real Estate Investor',
+    content: 'The combination of AI and professional valuations gives me confidence in my investment decisions. Highly recommended!',
+  },
+  {
+    avatar: 'https://i.pravatar.cc/150?img=3',
+    name: 'Emily Rodriguez',
+    role: 'Property Developer',
+    content: 'Fast, reliable, and transparent. MapChain is an essential tool for modern property development.',
+  },
+];
+
+// Mock data with fixed timestamps to avoid hydration errors
+const mockProperties: Property[] = [
+  {
+    id: '1',
+    tokenId: '0.0.123456',
+    title: 'Modern Downtown Apartment',
+    address: {
+      street: '123 Main St',
+      city: 'New York',
+      state: 'NY',
+      coordinates: {
+        latitude: 40.7128,
+        longitude: -74.006,
+      },
+    },
+    size: 1200,
+    price: 1500000,
+    landType: 'residential',
+    bedrooms: 2,
+    bathrooms: 2,
+    yearBuilt: 2020,
+    images: ['image1.jpg'],
+    owner: {
+      accountId: '0.0.12345',
+      name: 'John Doe',
+    },
+    metadata: {
+      createdAt: 1649712000000, // Fixed timestamp instead of Date.now()
+      updatedAt: 1649712000000, // Fixed timestamp instead of Date.now()
+      ipfsHash: 'Qm...',
+    },
+  },
+];
+
+export default function Home() {
+  const { classes } = useStyles();
+  const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
+
+  return (
+    <AppShell
+      padding="md"
+      header={{ height: 80 }}
+      footer={{ height: 200 }}
+    >
+      <Navigation />
+      
+      <Box className={classes.main}>
+        <Container size="lg">
+          <Box className={classes.mapContainer} style={{ height: 500 }}>
+            <ClientOnly>
+              <PropertyMap
+                properties={mockProperties}
+                onPropertySelect={(property) => {
+                  setSelectedProperty(property);
+                }}
+                initialCenter={[40.7128, -74.006]}
+                initialZoom={12}
+              />
+            </ClientOnly>
+          </Box>
+
+          <Box className={classes.section} mt="xl">
+            <Title order={2}>
+              Welcome to MapChain
+            </Title>
+            <Text size="lg" c="dimmed">
+              The future of property valuation is here. Get instant AI-powered valuations or connect with certified valuators on our platform.
+            </Text>
+          </Box>
+
+          <Box className={classes.section} mt="xl">
+            <Container size="xl">
+              <ClientOnly>
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8 }}
+                  viewport={{ once: true }}
+                >
+                  <Title order={2}>
+                    How It Works
+                  </Title>
+                  <Text size="lg" c="dimmed">
+                    Get started with MapChain in three simple steps
+                  </Text>
+
+                  <Grid mt={40}>
+                    {steps.map((step, index) => (
+                      <Grid.Col key={step.title} span={4}>
+                        <ClientOnly>
+                          <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.8, delay: index * 0.2 }}
+                            viewport={{ once: true }}
+                          >
+                            <Paper p="xl" radius="xl" withBorder>
+                              <step.icon size={48} color="var(--accent-color)" />
+                              <Title order={3} mb="sm">
+                                {step.title}
+                              </Title>
+                              <Text c="dimmed">
+                                {step.description}
+                              </Text>
+                            </Paper>
+                          </motion.div>
+                        </ClientOnly>
+                      </Grid.Col>
+                    ))}
+                  </Grid>
+                </motion.div>
+              </ClientOnly>
+            </Container>
+          </Box>
+
+          <Box className={classes.section} mt="xl">
+            <Container size="xl">
+              <ClientOnly>
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8 }}
+                  viewport={{ once: true }}
+                >
+                  <Title order={2}>
+                    What Our Users Say
+                  </Title>
+                  <Text size="lg" c="dimmed">
+                    Join thousands of satisfied valuators and property investors
+                  </Text>
+
+                  <Grid mt={40}>
+                    {reviews.map((review, index) => (
+                      <Grid.Col key={review.name} span={4}>
+                        <ClientOnly>
+                          <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.8, delay: index * 0.2 }}
+                            viewport={{ once: true }}
+                          >
+                            <Paper p="xl" radius="xl" withBorder>
+                              <Group mb="md">
+                                <Avatar src={review.avatar} size={48} radius="xl" />
+                                <Box>
+                                  <Text fw={600}>
+                                    {review.name}
+                                  </Text>
+                                  <Badge
+                                    variant="gradient"
+                                    gradient={{ from: '#00ff87', to: '#60efff' }}
+                                    radius="xl"
+                                  >
+                                    {review.role}
+                                  </Badge>
+                                </Box>
+                              </Group>
+                              <Text fz="sm" fs="italic" c="dimmed">
+                                "{review.content}"
+                              </Text>
+                            </Paper>
+                          </motion.div>
+                        </ClientOnly>
+                      </Grid.Col>
+                    ))}
+                  </Grid>
+                </motion.div>
+              </ClientOnly>
+            </Container>
+          </Box>
+        </Container>
+      </Box>
+
+      <Box className={classes.footer}>
+        <Container size="lg">
+          <Grid>
+            <Grid.Col span={{ base: 12, sm: 4 }}>
+              <Title order={4}>
+                MapChain
+              </Title>
+              <Text size="sm" c="dimmed">
+                Revolutionizing property valuation with AI and blockchain technology.
+              </Text>
+            </Grid.Col>
+            <Grid.Col span={{ base: 12, sm: 4 }}>
+              <Title order={4}>
+                Quick Links
+              </Title>
+              <Box component="nav">
+                <Text component="a" href="/properties" size="sm">
+                  Properties
+                </Text>
+                <Text component="a" href="/valuations" size="sm">
+                  Valuations
+                </Text>
+                <Text component="a" href="/become-valuator" size="sm">
+                  Become a Valuator
+                </Text>
+                <Text component="a" href="/contact" size="sm">
+                  Contact
+                </Text>
+              </Box>
+            </Grid.Col>
+            <Grid.Col span={{ base: 12, sm: 4 }}>
+              <Title order={4}>
+                Contact
+              </Title>
+              <Text size="sm" mb="xs">
+                Email: contact@mapchain.io
+              </Text>
+              <Text size="sm" mb="xs">
+                Twitter: @mapchain
+              </Text>
+              <Text size="sm">
+                LinkedIn: MapChain
+              </Text>
+            </Grid.Col>
+          </Grid>
+          <Text size="sm" ta="center" mt={48}>
+            2025 MapChain. All rights reserved.
+          </Text>
+        </Container>
+      </Box>
+    </AppShell>
+  );
+}

@@ -1,0 +1,39 @@
+@media (max-width: 700px) {
+  nav {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    padding: 0.7rem 4vw !important;
+  }
+  nav > div:last-child {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 0.7rem !important;
+    width: 100%;
+  }
+  section, footer {
+    padding-left: 2vw !important;
+    padding-right: 2vw !important;
+  }
+  h1 {
+    font-size: 1.5rem !important;
+  }
+  h2 {
+    font-size: 1.1rem !important;
+  }
+  .map-container {
+    width: 98vw !important;
+    height: 56vw !important;
+    min-height: 220px !important;
+    max-height: 320px !important;
+  }
+  .hero-cta {
+    flex-direction: column !important;
+    gap: 12px !important;
+  }
+  .feature-card, .testimonial-card {
+    min-width: 90vw !important;
+    max-width: 98vw !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+}
