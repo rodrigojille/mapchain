@@ -1,5 +1,42 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## MapChain
+
+MapChain is a next-generation real estate platform leveraging blockchain and AI to enable property tokenization, professional valuations, and secure, transparent transactions for owners, valuators, and administrators.
+
+## 🚀 Features
+- **User Authentication**: Email/password and Web3 wallet login (MetaMask, HashPack, etc.)
+- **Role-based Dashboards**: Dedicated experiences for Property Owners, Valuators, and Admins
+- **Property Tokenization**: Mint and manage property NFTs on Hedera
+- **Valuation Requests**: Request, accept, and complete property valuations with on-chain escrow
+- **AI & Official Valuation Comparison**: Get AI-driven and professional valuation reports
+- **Valuation History**: Transparent, immutable valuation history for every property
+- **Mobile-First UX**: Responsive dashboards and navigation for all devices
+- **Secure Sessions**: Local storage and session management for persistent login
+- **Admin Controls**: Manage users, properties, and platform settings
+
+## 🧑‍💼 User Journeys
+- **Property Owners**: Register/login, add properties, request valuations, tokenize assets, view valuation history
+- **Valuators**: Accept valuation requests, submit reports, track earnings and ratings
+- **Admins**: Platform oversight, user management, analytics
+
+## 🔒 Upcoming Features
+- Registration, password reset, and email verification flows (coming soon)
+- Enhanced notifications and messaging
+- Advanced analytics and reporting
+
+## 🛠️ Tech Stack
+- **Next.js** (React)
+- **Mantine** UI
+- **Hedera Hashgraph** (Smart Contracts, NFT, Tokenization)
+- **Node.js** (API)
+- **TypeScript**
+
+## 🚦 Quick Start
+1. `npm install`
+2. `npm run dev`
+3. Visit `http://localhost:3000`
+
 ## Getting Started
 
 First, run the development server:
